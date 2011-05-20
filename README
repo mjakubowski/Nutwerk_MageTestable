@@ -1,0 +1,33 @@
+Nutwerk_MageTestable
+====================
+
+DESCRIPTION:
+
+This project aims to make Magento testable with PHPUnit by providing patches
+to Mage.php class. Those patches will allow to insert values, objects and MockObjects
+into several static/singleton Mage functions.
+
+
+FEATURES:
+
+ - Mage::setStoreConfig($path, $value, $store = null)
+ - Mage::setModel($modelClass, $model)
+ - Mage::setResourceModel($modelClass, $model)
+ - Mage::setResourceSingleton($modelClass, $model)
+ - Mage::setHelper($name, $helper)
+
+Mage::setModel() and Mage::setResourceModel are implemented as FIFO registry arrays.
+All the other methods use simple registries.
+
+
+INSTALLATION:
+This project provides patched Mage.php files for different Magento version.
+The version is appended to the filename.
+
+Simply copy the Mage_<version>.php for your current Magento version to your test folder
+and include it in your test setup.
+
+The only thing that has to be changed is the value of the "BP" constant at the beginning
+of the file to match your Magento root directory.
+
+That's it :)

@@ -26,7 +26,10 @@
 
 define('DS', DIRECTORY_SEPARATOR);
 define('PS', PATH_SEPARATOR);
+// MODIFICATION START
+// Change BP to your Magento root folder if it's in another location than app/:
 define('BP', dirname(dirname(__FILE__)));
+// MODIFICATION END
 
 Mage::register('original_include_path', get_include_path());
 
@@ -319,8 +322,22 @@ final class Mage
      */
     public static function getStoreConfig($path, $store = null)
     {
+// MODIFICATION START
+        $registryKey = '_store_config/' . $path . '/' . self::app()->getStore($store)->getId();
+        if ($value = self::registry($registryKey)) {
+            return $value;
+        }
+// MODIFICATION END
         return self::app()->getStore($store)->getConfig($path);
     }
+
+// MODIFICATION START
+    public static function setStoreConfig($path, $value, $store = null)
+    {
+        $registryKey = '_store_config/' . $path . '/' . self::app()->getStore($store)->getId();
+        self::register($registryKey, $value);
+    }
+// MODIFICATION END
 
     /**
      * Retrieve config flag for store by path
@@ -429,8 +446,27 @@ final class Mage
      */
     public static function getModel($modelClass = '', $arguments = array())
     {
+// MODIFICATION START
+        $registryKey = '_model/'.$modelClass;
+        if (($models = self::registry($registryKey)) && is_array($models)) {
+            $model = array_shift(self::$_registry[$registryKey]);
+            return $model;
+        }
+// MODIFICATION END
         return self::getConfig()->getModelInstance($modelClass, $arguments);
     }
+
+// MODIFICATION START
+    public static function setModel($modelClass, $model)
+    {
+        $registryKey = '_model/'.$modelClass;
+        if (!isset(self::$_registry[$registryKey])) {
+            $models = array();
+        }
+
+        self::$_registry[$registryKey][] = $model;
+    }
+// MODIFICATION END
 
     /**
      * Retrieve model object singleton
@@ -448,6 +484,14 @@ final class Mage
         return self::registry($registryKey);
     }
 
+// MODIFICATION START
+    public static function setSingleton($modelClass, $model)
+    {
+        $registryKey = '_singleton/'.$modelClass;
+        self::register($registryKey, $model);
+    }
+// MODIFICATION END
+
     /**
      * Retrieve object of resource model
      *
@@ -457,8 +501,27 @@ final class Mage
      */
     public static function getResourceModel($modelClass, $arguments = array())
     {
+// MODIFICATION START
+        $registryKey = '_resource_model/'.$modelClass;
+        if (($models = self::registry($registryKey)) && is_array($models)) {
+            $model = array_shift(self::$_registry[$registryKey]);
+            return $model;
+        }
+// MODIFICATION END
         return self::getConfig()->getResourceModelInstance($modelClass, $arguments);
     }
+
+// MODIFICATION START
+    public static function setResourceModel($modelClass, $model)
+    {
+        $registryKey = '_resource_model/'.$modelClass;
+        if (!isset(self::$_registry[$registryKey])) {
+            $models = array();
+        }
+
+        self::$_registry[$registryKey][] = $model;
+    }
+// MODIFICATION END
 
     /**
      * Retrieve Controller instance by ClassName
@@ -489,6 +552,14 @@ final class Mage
         }
         return self::registry($registryKey);
     }
+
+// MODIFICATION START
+    public static function setResourceSingleton($modelClass, $model)
+    {
+        $registryKey = '_resource_singleton/'.$modelClass;
+        self::register($registryKey, $model);
+    }
+// MODIFICATION END
 
     /**
      * Deprecated, use self::helper()
@@ -521,6 +592,18 @@ final class Mage
         }
         return self::registry($registryKey);
     }
+
+// MODIFICATION START
+    public static function setHelper($name, $helper)
+    {
+        if (strpos($name, '/') === false) {
+            $name .= '/data';
+        }
+        
+        $registryKey = '_helper/'.$name;
+        self::register($registryKey, $helper);
+    }
+// MODIFICATION END
 
     /**
      * Return new exception by module to be thrown
