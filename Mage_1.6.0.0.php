@@ -614,6 +614,14 @@ final class Mage
         return self::registry($registryKey);
     }
 
+// MODIFICATION START
+    public static function setResourceHelper($moduleName, $helper)
+    {
+        $registryKey = '_resource_helper/'.$moduleName;
+        self::register($registryKey, $helper);
+    }
+// MODIFICATION END
+    
     /**
      * Return new exception by module to be thrown
      *
