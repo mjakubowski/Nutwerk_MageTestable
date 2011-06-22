@@ -324,8 +324,8 @@ final class Mage
     {
 // MODIFICATION START
         $registryKey = '_store_config/' . $path . '/' . self::app()->getStore($store)->getId();
-        if ($value = self::registry($registryKey)) {
-            return $value;
+        if (isset(self::$_registry[$registryKey])) {
+            return self::$_registry[$registryKey];
         }
 // MODIFICATION END
         return self::app()->getStore($store)->getConfig($path);
